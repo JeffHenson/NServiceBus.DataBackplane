@@ -17,7 +17,8 @@ namespace Sender
         {
             var busConfig = new EndpointConfiguration("Sender");
             busConfig.UsePersistence<InMemoryPersistence>();
-            busConfig.EnableDataBackplane<ConsulBackplane>();
+            busConfig.EnableDataBackplane<FileSystemBackplane>();
+            //busConfig.EnableDataBackplane<ConsulBackplane>();
             busConfig.EnableAutomaticRouting();
 
             var endpoint = await Endpoint.Start(busConfig).ConfigureAwait(false);

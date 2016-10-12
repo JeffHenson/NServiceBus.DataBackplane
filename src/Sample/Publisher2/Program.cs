@@ -18,7 +18,8 @@ namespace Publisher2
             var busConfig = new EndpointConfiguration("Publisher");
             busConfig.OverrideLocalAddress("Publisher-2");
             busConfig.UsePersistence<InMemoryPersistence>();
-            busConfig.EnableDataBackplane<ConsulBackplane>();
+            busConfig.EnableDataBackplane<FileSystemBackplane>();
+            //busConfig.EnableDataBackplane<ConsulBackplane>();
             busConfig.EnableAutomaticRouting().AdvertisePublishing(typeof(SomeEvent));
 
             var endpoint = await Endpoint.Start(busConfig).ConfigureAwait(false);

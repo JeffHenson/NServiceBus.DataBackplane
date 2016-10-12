@@ -55,6 +55,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\NServiceBus.Backplane.FileSystem\NServiceBus.Backplane.FileSystem.csproj">
+      <Project>{6a9978c6-e729-4041-8cc6-ae9f02f942e7}</Project>
+      <Name>NServiceBus.Backplane.FileSystem</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Messages\Messages.csproj">
       <Project>{92BBEBBA-DFB2-4D01-A4B3-07B57FC09032}</Project>
       <Name>Messages</Name>
