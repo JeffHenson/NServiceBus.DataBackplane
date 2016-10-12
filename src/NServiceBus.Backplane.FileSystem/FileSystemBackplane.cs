@@ -5,6 +5,7 @@ using NServiceBus.Backplane;
 using NServiceBus.Backplane.FileSystem.Internal;
 
 // ReSharper disable once CheckNamespace
+
 namespace NServiceBus
 {
     public class FileSystemBackplane : BackplaneDefinition

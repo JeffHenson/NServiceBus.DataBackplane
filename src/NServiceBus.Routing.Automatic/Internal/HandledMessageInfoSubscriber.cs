@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -20,7 +20,7 @@ namespace NServiceBus.Routing.Automatic.Internal
         private readonly IDataBackplaneClient _dataBackplane;
         private readonly ISubscriptionStorage _subscriptionStorage;
         private readonly ReadOnlySettings _settings;
-        
+
         private Dictionary<Type, string> _endpointMap = new Dictionary<Type, string>();
         private Dictionary<string, HashSet<EndpointInstance>> _instanceMap = new Dictionary<string, HashSet<EndpointInstance>>();
         private Dictionary<Type, string> _publisherMap = new Dictionary<Type, string>();

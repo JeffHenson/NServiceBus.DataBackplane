@@ -30,13 +30,9 @@ namespace NServiceBus.Routing.Automatic.Internal
                                                                                    heartbeatPeriod: TimeSpan.FromSeconds(5));
                                         });
 
-            context.RegisterStartupTask(builder =>
-                                        {
-                                            var handlerRegistry = builder.Build<MessageHandlerRegistry>();
-                                            return new HandledMessageInfoSubscriber(dataBackplane: builder.Build<IDataBackplaneClient>(),
+            context.RegisterStartupTask(builder => new HandledMessageInfoSubscriber(dataBackplane: builder.Build<IDataBackplaneClient>(),
                                                                                     subscriptionStorage: builder.Build<ISubscriptionStorage>(),
-                                                                                    settings: context.Settings);
-                                        });
+                                                                                    settings: context.Settings));
         }
 
         private static List<Type> GetMessageTypesHandledByThisEndpoint(MessageHandlerRegistry handlerRegistry, Conventions conventions)
