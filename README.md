@@ -31,7 +31,7 @@ The file system implementation is designed for development environments only. It
 ### Consul
 
 ```
-busConfig.EnableDataBackplane<ConsulBackplane>("http://127.0.0.1:8500");
+busConfig.EnableDataBackplane<ConsulBackplane>();
 ```
 
 The Consul based implementation is suitable for enviroments that are already running a highly available Consul cluster to do service discovery and management. It registers
