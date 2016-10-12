@@ -33,11 +33,9 @@ namespace NServiceBus.Routing.Automatic.Internal
             context.RegisterStartupTask(builder =>
                                         {
                                             var handlerRegistry = builder.Build<MessageHandlerRegistry>();
-                                            var messageTypesHandled = GetMessageTypesHandledByThisEndpoint(handlerRegistry, conventions);
                                             return new HandledMessageInfoSubscriber(dataBackplane: builder.Build<IDataBackplaneClient>(),
                                                                                     subscriptionStorage: builder.Build<ISubscriptionStorage>(),
-                                                                                    settings: context.Settings,
-                                                                                    hanledMessageTypes: messageTypesHandled);
+                                                                                    settings: context.Settings);
                                         });
         }
 

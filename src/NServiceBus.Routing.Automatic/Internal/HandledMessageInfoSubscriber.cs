@@ -20,29 +20,25 @@ namespace NServiceBus.Routing.Automatic.Internal
         private readonly IDataBackplaneClient _dataBackplane;
         private readonly ISubscriptionStorage _subscriptionStorage;
         private readonly ReadOnlySettings _settings;
-        private readonly IReadOnlyCollection<Type> _messageTypesHandledByThisEndpoint;
-
-        private IDataBackplaneSubscription _backplaneSubscription;
+        
         private Dictionary<Type, string> _endpointMap = new Dictionary<Type, string>();
         private Dictionary<string, HashSet<EndpointInstance>> _instanceMap = new Dictionary<string, HashSet<EndpointInstance>>();
         private Dictionary<Type, string> _publisherMap = new Dictionary<Type, string>();
-        private IMessageSession _messageSession;
+
         private MessageType[] _publishedMessageTypes;
+        private IDataBackplaneSubscription _backplaneSubscription;
 
         public HandledMessageInfoSubscriber(IDataBackplaneClient dataBackplane,
                                             ISubscriptionStorage subscriptionStorage,
-                                            ReadOnlySettings settings,
-                                            IReadOnlyCollection<Type> hanledMessageTypes)
+                                            ReadOnlySettings settings)
         {
             _dataBackplane = dataBackplane;
             _subscriptionStorage = subscriptionStorage;
             _settings = settings;
-            _messageTypesHandledByThisEndpoint = hanledMessageTypes;
         }
 
         protected override async Task OnStart(IMessageSession session)
         {
-            _messageSession = session;
             _publishedMessageTypes = _settings.Get<Type[]>("NServiceBus.AutomaticRouting.PublishedTypes").Select(t => new MessageType(t)).ToArray();
             _backplaneSubscription = await _dataBackplane.GetAllAndSubscribeToChanges("NServiceBus.HandledMessages", OnChanged, OnRemoved).ConfigureAwait(false);
         }
