@@ -6,22 +6,22 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NServiceBus.Backplane.FileSystem
+namespace NServiceBus.Backplane.FileSystem.Internal
 {
     internal class FileSystemDataBackplane : IDataBackplane
     {
-        private readonly string ownerId;
-        private readonly string folder;
+        private readonly string _ownerId;
+        private readonly string _folder;
 
         public FileSystemDataBackplane(string ownerId, string folder)
         {
-            this.ownerId = ownerId;
-            this.folder = folder;
+            _ownerId = ownerId;
+            _folder = folder;
         }
 
         public Task Publish(string type, string data)
         {
-            var content = new FileContent(ownerId, type, data);
+            var content = new FileContent(_ownerId, type, data);
             var path = CreateFilePath(type);
             File.WriteAllBytes(path, content.Encode());
             return Task.FromResult(0);
@@ -29,7 +29,7 @@ namespace NServiceBus.Backplane.FileSystem
 
         private string CreateFilePath(string type)
         {
-            var bytes = Encoding.UTF8.GetBytes(ownerId + type);
+            var bytes = Encoding.UTF8.GetBytes(_ownerId + type);
             var hashstring = new SHA256Managed();
             var hash = hashstring.ComputeHash(bytes);
             var hashString = string.Empty;
@@ -37,12 +37,12 @@ namespace NServiceBus.Backplane.FileSystem
             {
                 hashString += $"{x:x2}";
             }
-            return Path.Combine(folder, hashString);
+            return Path.Combine(_folder, hashString);
         }
 
         public Task<IReadOnlyCollection<Entry>> Query()
         {
-            var allFiles = Directory.GetFiles(folder);
+            var allFiles = Directory.GetFiles(_folder);
 
             IReadOnlyCollection<Entry> result = allFiles
                 .Where(f => File.GetLastWriteTimeUtc(f) > DateTime.UtcNow.Subtract(TimeSpan.FromSeconds(10)))
@@ -71,44 +71,6 @@ namespace NServiceBus.Backplane.FileSystem
             var path = CreateFilePath(type);
             File.Delete(path);
             return Task.FromResult(0);
-        }
-    }
-
-    public class FileContent
-    {
-        private readonly string ownerId;
-        private readonly string type;
-        private readonly string data;
-
-        public FileContent(string ownerId, string type, string data)
-        {
-            this.ownerId = ownerId;
-            this.type = type;
-            this.data = data;
-        }
-
-        public byte[] Encode()
-        {
-            using (var memStream = new MemoryStream())
-            {
-                using (var writer = new BinaryWriter(memStream))
-                {
-                    writer.Write(ownerId);
-                    writer.Write(type);
-                    writer.Write(data);
-                }
-                return memStream.ToArray();
-            }
-        }
-
-        public static Entry Decode(byte[] content)
-        {
-            var reader = new BinaryReader(new MemoryStream(content));
-            var owner = reader.ReadString();
-            var type = reader.ReadString();
-            var data = reader.ReadString();
-
-            return new Entry(owner, type, data);
         }
     }
 }

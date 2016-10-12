@@ -2,7 +2,7 @@
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using NServiceBus.Backplane.FileSystem;
+using NServiceBus.Backplane.FileSystem.Internal;
 using NUnit.Framework;
 
 namespace DataBackplane.Tests

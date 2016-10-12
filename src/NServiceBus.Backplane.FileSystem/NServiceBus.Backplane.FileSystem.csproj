@@ -40,8 +40,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Internal\FileContent.cs" />
     <Compile Include="FileSystemBackplane.cs" />
-    <Compile Include="FileSystemDataBackplane.cs" />
+    <Compile Include="Internal\FileSystemDataBackplane.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -2,8 +2,9 @@
 using System.IO;
 using System.Linq;
 using NServiceBus.Backplane;
-using NServiceBus.Backplane.FileSystem;
+using NServiceBus.Backplane.FileSystem.Internal;
 
+// ReSharper disable once CheckNamespace
 namespace NServiceBus
 {
     public class FileSystemBackplane : BackplaneDefinition
@@ -28,7 +29,6 @@ namespace NServiceBus
 
         private string CreateUniqueFOlderBasedOnSolutionName()
         {
-            string folder;
             var currentPath = AppDomain.CurrentDomain.BaseDirectory;
             var solutionFile = FindSolutionFile(new DirectoryInfo(currentPath));
             if (solutionFile == null)
@@ -38,8 +38,7 @@ namespace NServiceBus
             var tempDir = Path.Combine(Path.GetTempPath(), "NServiceBus.Backplane",
                                        Path.GetFileNameWithoutExtension(solutionFile));
             Directory.CreateDirectory(tempDir);
-            folder = tempDir;
-            return folder;
+            return tempDir;
         }
 
         private string FindSolutionFile(DirectoryInfo currentPath)
