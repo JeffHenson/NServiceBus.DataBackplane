@@ -95,7 +95,7 @@ namespace NServiceBus.Routing.Automatic.Internal
             return Task.FromResult(0);
         }
 
-        private async Task UpdateCaches(EndpointInstance instanceName, Type[] handledTypes, Type[] publishedTypes)
+        private Task UpdateCaches(EndpointInstance instanceName, Type[] handledTypes, Type[] publishedTypes)
         {
             var routingTable = _settings.Get<UnicastRoutingTable>();
             var publishers = _settings.Get<Publishers>();
@@ -107,7 +107,7 @@ namespace NServiceBus.Routing.Automatic.Internal
 
             LogChangesToEndpointMap(_endpointMap, newEndpointMap);
             LogChangesToInstanceMap(_instanceMap, newInstanceMap);
-            var toSubscribe = LogChangesToPublisherMap(_publisherMap, newPublisherMap).ToArray();
+            LogChangesToPublisherMap(_publisherMap, newPublisherMap);
 
             routingTable.AddOrReplaceRoutes("AutomaticRouting", newEndpointMap.Select(x => new RouteTableEntry(x.Key, UnicastRoute.CreateFromEndpointName(x.Value)))
                                                                               .ToList());
@@ -120,11 +120,7 @@ namespace NServiceBus.Routing.Automatic.Internal
             _endpointMap = newEndpointMap;
             _publisherMap = newPublisherMap;
 
-            foreach (var type in toSubscribe.Intersect(_messageTypesHandledByThisEndpoint))
-            {
-                await _messageSession.Subscribe(type)
-                                     .ConfigureAwait(false);
-            }
+            return Task.FromResult(0);
         }
 
         private Dictionary<string, HashSet<EndpointInstance>> BuildNewInstanceMap(EndpointInstance instanceName, Dictionary<string, HashSet<EndpointInstance>> instanceMap, bool removing)
@@ -183,6 +179,11 @@ namespace NServiceBus.Routing.Automatic.Internal
 
         private static void LogChangesToEndpointMap(Dictionary<Type, string> endpointMap, Dictionary<Type, string> newEndpointMap)
         {
+            if (!Logger.IsInfoEnabled)
+            {
+                return;
+            }
+
             foreach (var addedType in newEndpointMap.Keys.Except(endpointMap.Keys))
             {
                 Logger.Info($"Added route for {addedType.Name} to [{newEndpointMap[addedType]}]");
@@ -206,6 +207,11 @@ namespace NServiceBus.Routing.Automatic.Internal
 
         private static void LogChangesToInstanceMap(Dictionary<string, HashSet<EndpointInstance>> instanceMap, Dictionary<string, HashSet<EndpointInstance>> newInstanceMap)
         {
+            if (!Logger.IsInfoEnabled)
+            {
+                return;
+            }
+
             foreach (var addedEndpoint in newInstanceMap.Keys.Except(instanceMap.Keys))
             {
                 Logger.Info($"Added endpoint {addedEndpoint} with instances {FormatSet(newInstanceMap[addedEndpoint])}");
@@ -231,12 +237,16 @@ namespace NServiceBus.Routing.Automatic.Internal
             }
         }
 
-        private static IEnumerable<Type> LogChangesToPublisherMap(Dictionary<Type, string> publisherMap, Dictionary<Type, string> newPublisherMap)
+        private static void LogChangesToPublisherMap(Dictionary<Type, string> publisherMap, Dictionary<Type, string> newPublisherMap)
         {
+            if (!Logger.IsInfoEnabled)
+            {
+                return;
+            }
+
             foreach (var addedType in newPublisherMap.Keys.Except(publisherMap.Keys))
             {
                 Logger.Info($"Added {newPublisherMap[addedType]} as publisher of {addedType}.");
-                yield return addedType;
             }
 
             foreach (var removedType in publisherMap.Keys.Except(newPublisherMap.Keys))
