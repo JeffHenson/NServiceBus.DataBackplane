@@ -45,7 +45,7 @@ namespace NServiceBus.Backplane.FileSystem
             var allFiles = Directory.GetFiles(folder);
 
             IReadOnlyCollection<Entry> result = allFiles
-                .Where(f => File.GetLastWriteTimeUtc(f) < DateTime.UtcNow.Subtract(TimeSpan.FromSeconds(10)))
+                .Where(f => File.GetLastWriteTimeUtc(f) > DateTime.UtcNow.Subtract(TimeSpan.FromSeconds(10)))
                 .Select(s => TryReadContent(s))
                 .Where(c => c != null)
                 .Select(FileContent.Decode)
