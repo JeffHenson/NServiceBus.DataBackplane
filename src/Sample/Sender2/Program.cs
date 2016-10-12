@@ -4,7 +4,7 @@ using Messages;
 using NServiceBus;
 using NServiceBus.Backplane;
 
-namespace Sender
+namespace Sender2
 {
     internal class Program
     {
@@ -16,7 +16,7 @@ namespace Sender
         private static async Task MainAsync()
         {
             var busConfig = new EndpointConfiguration("Sender");
-            busConfig.OverrideLocalAddress("Sender-1");
+            busConfig.OverrideLocalAddress("Sender-2");
             busConfig.UsePersistence<InMemoryPersistence>();
             busConfig.EnableDataBackplane<FileSystemBackplane>();
             //busConfig.EnableDataBackplane<ConsulBackplane>();
