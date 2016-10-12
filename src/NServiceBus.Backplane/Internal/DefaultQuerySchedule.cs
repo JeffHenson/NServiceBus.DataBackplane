@@ -14,20 +14,18 @@ namespace NServiceBus.Backplane.Internal
 
         private class TimerWrapper : IDisposable
         {
-            private readonly Timer timer;
+            private readonly Timer _timer;
 
             public TimerWrapper(Func<Task> recurringAction, TimeSpan period)
             {
-                timer = new Timer(state => { recurringAction().ConfigureAwait(false).GetAwaiter().GetResult(); }, null, TimeSpan.Zero, period);
+                _timer = new Timer(state => { recurringAction().ConfigureAwait(false).GetAwaiter().GetResult(); }, null, TimeSpan.Zero, period);
             }
 
             public void Dispose()
             {
                 using (var waitHandle = new ManualResetEvent(false))
                 {
-                    timer.Dispose(waitHandle);
-
-                    // TODO: Use async synchronization primitive
+                    _timer.Dispose(waitHandle);
                     waitHandle.WaitOne();
                 }
             }
