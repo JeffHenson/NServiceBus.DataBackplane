@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using NServiceBus.Backplane.Internal;
 using NServiceBus.Features;
 
 namespace NServiceBus.Backplane

@@ -2,7 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace NServiceBus.Backplane
+namespace NServiceBus.Backplane.Internal
 {
     internal class DefaultQuerySchedule : IQuerySchedule
     {

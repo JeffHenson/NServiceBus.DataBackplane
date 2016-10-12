@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-namespace NServiceBus.Backplane
+namespace NServiceBus.Backplane.Internal
 {
     internal interface IQuerySchedule
     {

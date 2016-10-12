@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using NServiceBus.Backplane;
+using NServiceBus.Backplane.Internal;
 using NUnit.Framework;
 
 namespace DataBackplane.Tests
