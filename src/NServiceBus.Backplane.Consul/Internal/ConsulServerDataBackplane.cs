@@ -76,10 +76,9 @@ namespace NServiceBus.Backplane.Consul.Internal
         public async Task<IReadOnlyCollection<Entry>> Query()
         {
             var client = GetConsulClient();
+            var services = await client.Health.Service(ServiceName, null, true, new QueryOptions {Consistency = ConsistencyMode.Stale}).ConfigureAwait(false);
 
-            var services = await client.Health.Service(ServiceName).ConfigureAwait(false);
             var entries = from service in services.Response
-                          where service.Checks.All(c => c.Status == "passing")
                           let serviceId = service.Service.ID.Split(':')
                           let entryOwner = serviceId[0]
                           let type = serviceId[1]
