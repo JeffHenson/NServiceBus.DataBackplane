@@ -15,8 +15,8 @@ namespace NServiceBus.Routing.Automatic
     /*
         * Deactivation logic:
         * - if an endpoint shuts down properly, it updates the entry as inactive. Other endpoints deactivate rout
-        * - if an ednpoint is killed, it does not deactivate its entry. Other endpoints monitor the update time of the entry and deactivate it when it times out
-        * - if an endpoint is decomissioned, a correposponding entry should be delted.
+        * - if an endpoint is killed, it does not deactivate its entry. Other endpoints monitor the update time of the entry and deactivate it when it times out
+        * - if an endpoint is decommissioned, a corresponding entry should be delted.
         */
 
     public class HandledMessageInfoSubscriber : FeatureStartupTask
