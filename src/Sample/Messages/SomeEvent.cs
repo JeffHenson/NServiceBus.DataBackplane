@@ -2,5 +2,8 @@
 
 namespace Messages
 {
-    public class SomeEvent : IEvent {}
+    public class SomeEvent : IEvent
+    {
+        public int Number { get; set; }
+    }
 }

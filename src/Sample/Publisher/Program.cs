@@ -26,6 +26,7 @@ namespace Publisher
 
             Console.WriteLine("Press <enter> to publish an event.");
 
+            var i = 0;
             while (true)
             {
                 var line = Console.ReadLine();
@@ -33,7 +34,8 @@ namespace Publisher
                 {
                     break;
                 }
-                await endpoint.Publish(new SomeEvent()).ConfigureAwait(false);
+                await endpoint.Publish(new SomeEvent {Number = i}).ConfigureAwait(false);
+                i++;
             }
 
             await endpoint.Stop().ConfigureAwait(false);
@@ -44,7 +46,7 @@ namespace Publisher
     {
         public Task Handle(SomeCommand message, IMessageHandlerContext context)
         {
-            Console.WriteLine("1: Got command");
+            Console.WriteLine($"Got command {message.Number} from {context.ReplyToAddress}");
             return Task.FromResult(0);
         }
     }

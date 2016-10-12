@@ -2,5 +2,8 @@
 
 namespace Messages
 {
-    public class SomeCommand : ICommand {}
+    public class SomeCommand : ICommand
+    {
+        public int Number { get; set; }
+    }
 }

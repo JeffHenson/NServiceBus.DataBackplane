@@ -26,6 +26,7 @@ namespace Sender2
 
             Console.WriteLine("Press <enter> to send a command.");
 
+            var i = 0;
             while (true)
             {
                 var line = Console.ReadLine();
@@ -33,7 +34,8 @@ namespace Sender2
                 {
                     break;
                 }
-                await endpoint.Send(new SomeCommand()).ConfigureAwait(false);
+                await endpoint.Send(new SomeCommand {Number = i}).ConfigureAwait(false);
+                i++;
             }
 
             await endpoint.Stop().ConfigureAwait(false);
@@ -44,7 +46,7 @@ namespace Sender2
     {
         public Task Handle(SomeEvent message, IMessageHandlerContext context)
         {
-            Console.WriteLine("Got event");
+            Console.WriteLine($"Got event {message.Number} from {context.ReplyToAddress}");
             return Task.FromResult(0);
         }
     }
