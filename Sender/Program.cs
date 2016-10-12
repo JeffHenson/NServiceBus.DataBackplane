@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using Messages;
 using NServiceBus;
 using NServiceBus.Backplane;
-using NServiceBus.Backplane.FileSystem;
 
 namespace Sender
 {

@@ -1,8 +1,10 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using NServiceBus.Backplane;
+using NServiceBus.Backplane.FileSystem;
 
-namespace NServiceBus.Backplane.FileSystem
+namespace NServiceBus
 {
     public class FileSystemBackplane : BackplaneDefinition
     {

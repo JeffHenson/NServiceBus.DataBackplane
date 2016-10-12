@@ -132,18 +132,14 @@ namespace NServiceBus.Routing.Automatic
             LogChangesToEndpointMap(endpointMap, newEndpointMap);
             LogChangesToInstanceMap(instanceMap, newInstanceMap);
             var toSubscribe = LogChangesToPublisherMap(publisherMap, newPublisherMap).ToArray();
-
-            #region AddOrReplace
-
+            
             routingTable.AddOrReplaceRoutes("AutomaticRouting", newEndpointMap.Select(x => new RouteTableEntry(x.Key, UnicastRoute.CreateFromEndpointName(x.Value)))
                                                                               .ToList());
             publishers.AddOrReplacePublishers("AutomaticRouting", newPublisherMap.Select(x => new PublisherTableEntry(x.Key, PublisherAddress.CreateFromEndpointName(x.Value)))
                                                                                  .ToList());
             endpointInstances.AddOrReplaceInstances("AutomaticRouting", newInstanceMap.SelectMany(x => x.Value)
                                                                                       .ToList());
-
-            #endregion
-
+            
             instanceMap = newInstanceMap;
             endpointMap = newEndpointMap;
             publisherMap = newPublisherMap;
