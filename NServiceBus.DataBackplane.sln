@@ -1,29 +1,36 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.23107.0
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NServiceBus.Backplane.SqlServer", "SqlDataBackplane\NServiceBus.Backplane.SqlServer.csproj", "{131552C2-0FA6-44DE-8EC7-C9749F0CF46C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataBackplane.Tests", "test\DataBackplane.Tests\DataBackplane.Tests.csproj", "{5AE13D84-D79E-40AB-8DF8-F860EA7DB369}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SqlDataBackplane.Tests", "SqlDataBackplane.Tests\SqlDataBackplane.Tests.csproj", "{5AE13D84-D79E-40AB-8DF8-F860EA7DB369}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NServiceBus.Routing.Automatic", "NServiceBus.Routing.Automatic\NServiceBus.Routing.Automatic.csproj", "{E42381C4-A20F-4C57-98C2-7035793A993D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NServiceBus.Routing.Automatic", "src\NServiceBus.Routing.Automatic\NServiceBus.Routing.Automatic.csproj", "{E42381C4-A20F-4C57-98C2-7035793A993D}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Sample", "Sample", "{BF22D52B-1EBE-415D-90C9-E1557DB488C0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sender", "Sender\Sender.csproj", "{D60A6ECA-D564-4A8B-AA9E-C3F6921C07A8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sender", "src\Sample\Sender\Sender.csproj", "{D60A6ECA-D564-4A8B-AA9E-C3F6921C07A8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Messages", "Messages\Messages.csproj", "{92BBEBBA-DFB2-4D01-A4B3-07B57FC09032}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Messages", "src\Sample\Messages\Messages.csproj", "{92BBEBBA-DFB2-4D01-A4B3-07B57FC09032}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Publisher", "Publisher\Publisher.csproj", "{F208B40A-CBBB-4C70-BA31-43240AB981C8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Publisher", "src\Sample\Publisher\Publisher.csproj", "{F208B40A-CBBB-4C70-BA31-43240AB981C8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NServiceBus.Backplane", "NServiceBus.Backplane\NServiceBus.Backplane.csproj", "{C820915E-0174-4F6C-8631-648487315476}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NServiceBus.Backplane", "src\NServiceBus.Backplane\NServiceBus.Backplane.csproj", "{C820915E-0174-4F6C-8631-648487315476}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NServiceBus.Backplane.FileSystem", "NServiceBus.Backplane.FileSystem\NServiceBus.Backplane.FileSystem.csproj", "{6A9978C6-E729-4041-8CC6-AE9F02F942E7}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NServiceBus.Backplane.Consul", "src\NServiceBus.Backplane.Consul\NServiceBus.Backplane.Consul.csproj", "{D8A72104-67D9-46F1-BD32-A0C13838DC24}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NServiceBus.Backplane.Consul", "NServiceBus.Backplane.Consul\NServiceBus.Backplane.Consul.csproj", "{D8A72104-67D9-46F1-BD32-A0C13838DC24}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Publisher2", "src\Sample\Publisher2\Publisher2.csproj", "{1FB7DE00-6387-4720-8550-DF16BCFD4084}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Publisher2", "Publisher2\Publisher2.csproj", "{1FB7DE00-6387-4720-8550-DF16BCFD4084}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NServiceBus.Backplane.FileSystem", "src\NServiceBus.Backplane.FileSystem\NServiceBus.Backplane.FileSystem.csproj", "{6A9978C6-E729-4041-8CC6-AE9F02F942E7}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{B53CF45B-776B-4924-869E-626DE9688895}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{5490A9F2-9922-40A7-B9F8-B807C5F36F68}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{2F3F6167-E0BB-4F52-AE19-C08E23327957}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -31,10 +38,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{131552C2-0FA6-44DE-8EC7-C9749F0CF46C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{131552C2-0FA6-44DE-8EC7-C9749F0CF46C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{131552C2-0FA6-44DE-8EC7-C9749F0CF46C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{131552C2-0FA6-44DE-8EC7-C9749F0CF46C}.Release|Any CPU.Build.0 = Release|Any CPU
 		{5AE13D84-D79E-40AB-8DF8-F860EA7DB369}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{5AE13D84-D79E-40AB-8DF8-F860EA7DB369}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5AE13D84-D79E-40AB-8DF8-F860EA7DB369}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -59,10 +62,6 @@ Global
 		{C820915E-0174-4F6C-8631-648487315476}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C820915E-0174-4F6C-8631-648487315476}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C820915E-0174-4F6C-8631-648487315476}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6A9978C6-E729-4041-8CC6-AE9F02F942E7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6A9978C6-E729-4041-8CC6-AE9F02F942E7}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6A9978C6-E729-4041-8CC6-AE9F02F942E7}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6A9978C6-E729-4041-8CC6-AE9F02F942E7}.Release|Any CPU.Build.0 = Release|Any CPU
 		{D8A72104-67D9-46F1-BD32-A0C13838DC24}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{D8A72104-67D9-46F1-BD32-A0C13838DC24}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D8A72104-67D9-46F1-BD32-A0C13838DC24}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -71,14 +70,24 @@ Global
 		{1FB7DE00-6387-4720-8550-DF16BCFD4084}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1FB7DE00-6387-4720-8550-DF16BCFD4084}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1FB7DE00-6387-4720-8550-DF16BCFD4084}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6A9978C6-E729-4041-8CC6-AE9F02F942E7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6A9978C6-E729-4041-8CC6-AE9F02F942E7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6A9978C6-E729-4041-8CC6-AE9F02F942E7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6A9978C6-E729-4041-8CC6-AE9F02F942E7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
+		{5AE13D84-D79E-40AB-8DF8-F860EA7DB369} = {B53CF45B-776B-4924-869E-626DE9688895}
+		{E42381C4-A20F-4C57-98C2-7035793A993D} = {5490A9F2-9922-40A7-B9F8-B807C5F36F68}
+		{BF22D52B-1EBE-415D-90C9-E1557DB488C0} = {5490A9F2-9922-40A7-B9F8-B807C5F36F68}
 		{D60A6ECA-D564-4A8B-AA9E-C3F6921C07A8} = {BF22D52B-1EBE-415D-90C9-E1557DB488C0}
 		{92BBEBBA-DFB2-4D01-A4B3-07B57FC09032} = {BF22D52B-1EBE-415D-90C9-E1557DB488C0}
 		{F208B40A-CBBB-4C70-BA31-43240AB981C8} = {BF22D52B-1EBE-415D-90C9-E1557DB488C0}
+		{C820915E-0174-4F6C-8631-648487315476} = {5490A9F2-9922-40A7-B9F8-B807C5F36F68}
+		{D8A72104-67D9-46F1-BD32-A0C13838DC24} = {5490A9F2-9922-40A7-B9F8-B807C5F36F68}
 		{1FB7DE00-6387-4720-8550-DF16BCFD4084} = {BF22D52B-1EBE-415D-90C9-E1557DB488C0}
+		{6A9978C6-E729-4041-8CC6-AE9F02F942E7} = {5490A9F2-9922-40A7-B9F8-B807C5F36F68}
 	EndGlobalSection
 EndGlobal
