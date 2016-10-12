@@ -12,18 +12,18 @@ namespace NServiceBus
 {
     public static class AutomaticRoutingConfigExtensions
     {
-        public static EnableAutomaticSettings EnableAutomaticRouting(this EndpointConfiguration endpointConfiguration)
+        public static AutomaticRoutingSettings EnableAutomaticRouting(this EndpointConfiguration endpointConfiguration)
         {
             var settings = endpointConfiguration.GetSettings();
             settings.EnableFeatureByDefault(typeof(BackplaneBasedRouting));
             settings.Set(typeof(AutoSubscribe).FullName, FeatureState.Disabled);
-            return new EnableAutomaticSettings(settings);
+            return new AutomaticRoutingSettings(settings);
         }
     }
 
-    public class EnableAutomaticSettings : ExposeSettings
+    public class AutomaticRoutingSettings : ExposeSettings
     {
-        public EnableAutomaticSettings(SettingsHolder settings) : base(settings) {}
+        public AutomaticRoutingSettings(SettingsHolder settings) : base(settings) {}
 
         public void AdvertisePublishing(params Type[] publishedTypes)
         {
