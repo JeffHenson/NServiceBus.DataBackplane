@@ -11,9 +11,9 @@ using NServiceBus.Settings;
 using NServiceBus.Unicast.Subscriptions;
 using NServiceBus.Unicast.Subscriptions.MessageDrivenSubscriptions;
 
-namespace NServiceBus.Routing.Automatic
+namespace NServiceBus.Routing.Automatic.Internal
 {
-    public class HandledMessageInfoSubscriber : FeatureStartupTask
+    internal class HandledMessageInfoSubscriber : FeatureStartupTask
     {
         private static readonly ILog Logger = LogManager.GetLogger<HandledMessageInfoSubscriber>();
 
@@ -22,11 +22,12 @@ namespace NServiceBus.Routing.Automatic
         private readonly ReadOnlySettings _settings;
         private readonly IReadOnlyCollection<Type> _messageTypesHandledByThisEndpoint;
 
-        private IDataBackplaneSubscription _subscription;
+        private IDataBackplaneSubscription _backplaneSubscription;
         private Dictionary<Type, string> _endpointMap = new Dictionary<Type, string>();
         private Dictionary<string, HashSet<EndpointInstance>> _instanceMap = new Dictionary<string, HashSet<EndpointInstance>>();
         private Dictionary<Type, string> _publisherMap = new Dictionary<Type, string>();
         private IMessageSession _messageSession;
+        private MessageType[] _publishedMessageTypes;
 
         public HandledMessageInfoSubscriber(IDataBackplaneClient dataBackplane,
                                             ISubscriptionStorage subscriptionStorage,
@@ -42,7 +43,8 @@ namespace NServiceBus.Routing.Automatic
         protected override async Task OnStart(IMessageSession session)
         {
             _messageSession = session;
-            _subscription = await _dataBackplane.GetAllAndSubscribeToChanges("NServiceBus.HandledMessages", OnChanged, OnRemoved).ConfigureAwait(false);
+            _publishedMessageTypes = _settings.Get<Type[]>("NServiceBus.AutomaticRouting.PublishedTypes").Select(t => new MessageType(t)).ToArray();
+            _backplaneSubscription = await _dataBackplane.GetAllAndSubscribeToChanges("NServiceBus.HandledMessages", OnChanged, OnRemoved).ConfigureAwait(false);
         }
 
         private async Task OnChanged(Entry e)
@@ -54,7 +56,17 @@ namespace NServiceBus.Routing.Automatic
 
             var publishedTypes = deserializedData.PublishedMessageTypes.Select(x => Type.GetType(x, false)).Where(x => x != null).ToArray();
 
+            await SubscribeEndpoint(instanceName, handledTypes).ConfigureAwait(false);
             await UpdateCaches(instanceName, handledTypes, publishedTypes).ConfigureAwait(false);
+        }
+
+        private async Task SubscribeEndpoint(EndpointInstance instanceName, Type[] handledMessageTypes)
+        {
+            var address = $"{instanceName.Properties["queue"]}@{instanceName.Properties["machine"]}";
+            foreach (var messageType in handledMessageTypes.Select(t => new MessageType(t)).Intersect(_publishedMessageTypes))
+            {
+                await _subscriptionStorage.Subscribe(new Subscriber(address, instanceName.Endpoint), messageType, null).ConfigureAwait(false);
+            }
         }
 
         private async Task OnRemoved(Entry e)
@@ -62,24 +74,24 @@ namespace NServiceBus.Routing.Automatic
             var deserializedData = JsonConvert.DeserializeObject<HandledMessageDeclaration>(e.Data);
             var instanceName = new EndpointInstance(deserializedData.EndpointName, deserializedData.Discriminator, deserializedData.InstanceProperties);
 
-            Logger.InfoFormat("Instance {0} removed from routing tables.", instanceName);
+            var handledTypes = deserializedData.HandledMessageTypes.Select(x => Type.GetType(x, false)).Where(x => x != null).ToArray();
 
-            await UnsubscribeEndpoint(instanceName, deserializedData).ConfigureAwait(false);
+            await UnsubscribeEndpoint(instanceName, handledTypes).ConfigureAwait(false);
             await UpdateCaches(instanceName, new Type[0], new Type[0]).ConfigureAwait(false);
         }
 
-        private async Task UnsubscribeEndpoint(EndpointInstance instanceName, HandledMessageDeclaration deserializedData)
+        private async Task UnsubscribeEndpoint(EndpointInstance instanceName, Type[] handledMessageTypes)
         {
             var address = $"{instanceName.Properties["queue"]}@{instanceName.Properties["machine"]}";
-            foreach (var messageType in deserializedData.HandledMessageTypes)
+            foreach (var messageType in handledMessageTypes.Select(t => new MessageType(t)).Intersect(_publishedMessageTypes))
             {
-                await _subscriptionStorage.Unsubscribe(new Subscriber(address, instanceName.Endpoint), new MessageType(messageType), null).ConfigureAwait(false);
+                await _subscriptionStorage.Unsubscribe(new Subscriber(address, instanceName.Endpoint), messageType, null).ConfigureAwait(false);
             }
         }
 
         protected override Task OnStop(IMessageSession session)
         {
-            _subscription.Unsubscribe();
+            _backplaneSubscription.Unsubscribe();
             return Task.FromResult(0);
         }
 

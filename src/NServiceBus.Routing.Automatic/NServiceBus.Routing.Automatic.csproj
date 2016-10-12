@@ -52,8 +52,8 @@
     <Compile Include="AutomaticRoutingSettings.cs" />
     <Compile Include="Internal\BackplaneBasedRouting.cs" />
     <Compile Include="HandledMessageDeclaration.cs" />
-    <Compile Include="HandledMessageInfoPublisher.cs" />
-    <Compile Include="HandledMessageInfoSubscriber.cs" />
+    <Compile Include="Internal\HandledMessageInfoPublisher.cs" />
+    <Compile Include="Internal\HandledMessageInfoSubscriber.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

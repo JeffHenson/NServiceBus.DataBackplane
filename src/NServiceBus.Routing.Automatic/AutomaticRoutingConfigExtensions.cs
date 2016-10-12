@@ -11,10 +11,9 @@ namespace NServiceBus
     {
         public static AutomaticRoutingSettings EnableAutomaticRouting(this EndpointConfiguration endpointConfiguration)
         {
-            var settings = endpointConfiguration.GetSettings();
-            settings.EnableFeatureByDefault(typeof(BackplaneBasedRouting));
-            settings.Set(typeof(AutoSubscribe).FullName, FeatureState.Disabled);
-            return new AutomaticRoutingSettings(settings);
+            endpointConfiguration.EnableFeature<BackplaneBasedRouting>();
+            endpointConfiguration.DisableFeature<AutoSubscribe>();
+            return new AutomaticRoutingSettings(endpointConfiguration.GetSettings());
         }
     }
 }

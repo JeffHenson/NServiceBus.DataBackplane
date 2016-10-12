@@ -8,9 +8,9 @@ using NServiceBus.Backplane;
 using NServiceBus.Features;
 using NServiceBus.Settings;
 
-namespace NServiceBus.Routing.Automatic
+namespace NServiceBus.Routing.Automatic.Internal
 {
-    public class HandledMessageInfoPublisher : FeatureStartupTask
+    internal class HandledMessageInfoPublisher : FeatureStartupTask
     {
         private readonly IDataBackplaneClient _dataBackplane;
         private readonly IReadOnlyCollection<Type> _hanledMessageTypes;
