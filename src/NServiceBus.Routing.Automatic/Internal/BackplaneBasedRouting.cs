@@ -4,6 +4,7 @@ using System.Linq;
 using NServiceBus.Backplane;
 using NServiceBus.Features;
 using NServiceBus.Unicast;
+using NServiceBus.Unicast.Subscriptions.MessageDrivenSubscriptions;
 
 namespace NServiceBus.Routing.Automatic.Internal
 {
@@ -34,6 +35,7 @@ namespace NServiceBus.Routing.Automatic.Internal
                                             var handlerRegistry = builder.Build<MessageHandlerRegistry>();
                                             var messageTypesHandled = GetMessageTypesHandledByThisEndpoint(handlerRegistry, conventions);
                                             return new HandledMessageInfoSubscriber(dataBackplane: builder.Build<IDataBackplaneClient>(),
+                                                                                    subscriptionStorage: builder.Build<ISubscriptionStorage>(),
                                                                                     settings: context.Settings,
                                                                                     hanledMessageTypes: messageTypesHandled);
                                         });
