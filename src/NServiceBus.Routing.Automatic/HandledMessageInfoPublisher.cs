@@ -12,12 +12,12 @@ namespace NServiceBus.Routing.Automatic
 {
     public class HandledMessageInfoPublisher : FeatureStartupTask
     {
-        private readonly IDataBackplaneClient dataBackplane;
-        private readonly IReadOnlyCollection<Type> hanledMessageTypes;
-        private readonly ReadOnlySettings settings;
-        private readonly TimeSpan heartbeatPeriod;
-        private HandledMessageDeclaration publication;
-        private Timer timer;
+        private readonly IDataBackplaneClient _dataBackplane;
+        private readonly IReadOnlyCollection<Type> _hanledMessageTypes;
+        private readonly ReadOnlySettings _settings;
+        private readonly TimeSpan _heartbeatPeriod;
+        private HandledMessageDeclaration _publication;
+        private Timer _timer;
 
         public HandledMessageInfoPublisher(
             IDataBackplaneClient dataBackplane,
@@ -25,46 +25,46 @@ namespace NServiceBus.Routing.Automatic
             ReadOnlySettings settings,
             TimeSpan heartbeatPeriod)
         {
-            this.dataBackplane = dataBackplane;
-            this.hanledMessageTypes = hanledMessageTypes;
-            this.settings = settings;
-            this.heartbeatPeriod = heartbeatPeriod;
+            _dataBackplane = dataBackplane;
+            _hanledMessageTypes = hanledMessageTypes;
+            _settings = settings;
+            _heartbeatPeriod = heartbeatPeriod;
         }
 
         protected override Task OnStart(IMessageSession session)
         {
-            var mainLogicalAddress = settings.LogicalAddress();
+            var mainLogicalAddress = _settings.LogicalAddress();
             var instanceProperties = mainLogicalAddress.EndpointInstance.Properties.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
             instanceProperties["queue"] = mainLogicalAddress.EndpointInstance.Endpoint;
-            var publishedMessageTypes = settings.Get<Type[]>("NServiceBus.AutomaticRouting.PublishedTypes");
-            publication = new HandledMessageDeclaration
-                          {
-                              EndpointName = settings.EndpointName(),
-                              Discriminator = mainLogicalAddress.EndpointInstance.Discriminator,
-                              InstanceProperties = instanceProperties,
-                              HandledMessageTypes = hanledMessageTypes.Select(m => m.AssemblyQualifiedName).ToArray(),
-                              PublishedMessageTypes = publishedMessageTypes.Select(m => m.AssemblyQualifiedName).ToArray()
-                          };
+            var publishedMessageTypes = _settings.Get<Type[]>("NServiceBus.AutomaticRouting.PublishedTypes");
+            _publication = new HandledMessageDeclaration
+                           {
+                               EndpointName = _settings.EndpointName(),
+                               Discriminator = mainLogicalAddress.EndpointInstance.Discriminator,
+                               InstanceProperties = instanceProperties,
+                               HandledMessageTypes = _hanledMessageTypes.Select(m => m.AssemblyQualifiedName).ToArray(),
+                               PublishedMessageTypes = publishedMessageTypes.Select(m => m.AssemblyQualifiedName).ToArray()
+                           };
 
-            timer = new Timer(state => { Publish().ConfigureAwait(false).GetAwaiter().GetResult(); }, null, heartbeatPeriod, heartbeatPeriod);
+            _timer = new Timer(state => { Publish().ConfigureAwait(false).GetAwaiter().GetResult(); }, null, _heartbeatPeriod, _heartbeatPeriod);
 
             return Publish();
         }
 
         private Task Publish()
         {
-            var dataJson = JsonConvert.SerializeObject(publication);
-            return dataBackplane.Publish("NServiceBus.HandledMessages", dataJson);
+            var dataJson = JsonConvert.SerializeObject(_publication);
+            return _dataBackplane.Publish("NServiceBus.HandledMessages", dataJson);
         }
 
         protected override Task OnStop(IMessageSession session)
         {
             using (var waitHandle = new ManualResetEvent(false))
             {
-                timer.Dispose(waitHandle);
+                _timer.Dispose(waitHandle);
                 waitHandle.WaitOne();
             }
-            return dataBackplane.Revoke("NServiceBus.HandledMessages");
+            return _dataBackplane.Revoke("NServiceBus.HandledMessages");
         }
     }
 }

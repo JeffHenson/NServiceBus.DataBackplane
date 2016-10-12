@@ -48,7 +48,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BackplaneBasedRouting.cs" />
+    <Compile Include="AutomaticRoutingConfigExtensions.cs" />
+    <Compile Include="AutomaticRoutingSettings.cs" />
+    <Compile Include="Internal\BackplaneBasedRouting.cs" />
     <Compile Include="HandledMessageDeclaration.cs" />
     <Compile Include="HandledMessageInfoPublisher.cs" />
     <Compile Include="HandledMessageInfoSubscriber.cs" />

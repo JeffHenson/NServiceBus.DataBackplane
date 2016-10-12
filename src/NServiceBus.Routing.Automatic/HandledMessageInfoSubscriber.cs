@@ -15,28 +15,28 @@ namespace NServiceBus.Routing.Automatic
     {
         private static readonly ILog Logger = LogManager.GetLogger<HandledMessageInfoSubscriber>();
 
-        private readonly IDataBackplaneClient dataBackplane;
-        private readonly ReadOnlySettings settings;
-        private readonly IReadOnlyCollection<Type> messageTypesHandledByThisEndpoint;
-        private IDataBackplaneSubscription subscription;
-        private Dictionary<Type, string> endpointMap = new Dictionary<Type, string>();
-        private Dictionary<string, HashSet<EndpointInstance>> instanceMap = new Dictionary<string, HashSet<EndpointInstance>>();
-        private Dictionary<Type, string> publisherMap = new Dictionary<Type, string>();
-        private IMessageSession messageSession;
+        private readonly IDataBackplaneClient _dataBackplane;
+        private readonly ReadOnlySettings _settings;
+        private readonly IReadOnlyCollection<Type> _messageTypesHandledByThisEndpoint;
+        private IDataBackplaneSubscription _subscription;
+        private Dictionary<Type, string> _endpointMap = new Dictionary<Type, string>();
+        private Dictionary<string, HashSet<EndpointInstance>> _instanceMap = new Dictionary<string, HashSet<EndpointInstance>>();
+        private Dictionary<Type, string> _publisherMap = new Dictionary<Type, string>();
+        private IMessageSession _messageSession;
 
         public HandledMessageInfoSubscriber(IDataBackplaneClient dataBackplane,
                                             ReadOnlySettings settings,
                                             IReadOnlyCollection<Type> hanledMessageTypes)
         {
-            this.dataBackplane = dataBackplane;
-            this.settings = settings;
-            messageTypesHandledByThisEndpoint = hanledMessageTypes;
+            _dataBackplane = dataBackplane;
+            _settings = settings;
+            _messageTypesHandledByThisEndpoint = hanledMessageTypes;
         }
 
         protected override async Task OnStart(IMessageSession session)
         {
-            messageSession = session;
-            subscription = await dataBackplane.GetAllAndSubscribeToChanges("NServiceBus.HandledMessages", OnChanged, OnRemoved).ConfigureAwait(false);
+            _messageSession = session;
+            _subscription = await _dataBackplane.GetAllAndSubscribeToChanges("NServiceBus.HandledMessages", OnChanged, OnRemoved).ConfigureAwait(false);
         }
 
         private async Task OnChanged(Entry e)
@@ -63,23 +63,23 @@ namespace NServiceBus.Routing.Automatic
 
         protected override Task OnStop(IMessageSession session)
         {
-            subscription.Unsubscribe();
+            _subscription.Unsubscribe();
             return Task.FromResult(0);
         }
 
         private async Task UpdateCaches(EndpointInstance instanceName, Type[] handledTypes, Type[] publishedTypes)
         {
-            var routingTable = settings.Get<UnicastRoutingTable>();
-            var publishers = settings.Get<Publishers>();
-            var endpointInstances = settings.Get<EndpointInstances>();
+            var routingTable = _settings.Get<UnicastRoutingTable>();
+            var publishers = _settings.Get<Publishers>();
+            var endpointInstances = _settings.Get<EndpointInstances>();
 
-            var newInstanceMap = BuildNewInstanceMap(instanceName, instanceMap, handledTypes.Length == 0);
-            var newEndpointMap = BuildNewEndpointMap(instanceName.Endpoint, handledTypes, endpointMap);
-            var newPublisherMap = BuildNewPublisherMap(instanceName, publishedTypes, publisherMap);
+            var newInstanceMap = BuildNewInstanceMap(instanceName, _instanceMap, handledTypes.Length == 0);
+            var newEndpointMap = BuildNewEndpointMap(instanceName.Endpoint, handledTypes, _endpointMap);
+            var newPublisherMap = BuildNewPublisherMap(instanceName, publishedTypes, _publisherMap);
 
-            LogChangesToEndpointMap(endpointMap, newEndpointMap);
-            LogChangesToInstanceMap(instanceMap, newInstanceMap);
-            var toSubscribe = LogChangesToPublisherMap(publisherMap, newPublisherMap).ToArray();
+            LogChangesToEndpointMap(_endpointMap, newEndpointMap);
+            LogChangesToInstanceMap(_instanceMap, newInstanceMap);
+            var toSubscribe = LogChangesToPublisherMap(_publisherMap, newPublisherMap).ToArray();
 
             routingTable.AddOrReplaceRoutes("AutomaticRouting", newEndpointMap.Select(x => new RouteTableEntry(x.Key, UnicastRoute.CreateFromEndpointName(x.Value)))
                                                                               .ToList());
@@ -88,14 +88,14 @@ namespace NServiceBus.Routing.Automatic
             endpointInstances.AddOrReplaceInstances("AutomaticRouting", newInstanceMap.SelectMany(x => x.Value)
                                                                                       .ToList());
 
-            instanceMap = newInstanceMap;
-            endpointMap = newEndpointMap;
-            publisherMap = newPublisherMap;
+            _instanceMap = newInstanceMap;
+            _endpointMap = newEndpointMap;
+            _publisherMap = newPublisherMap;
 
-            foreach (var type in toSubscribe.Intersect(messageTypesHandledByThisEndpoint))
+            foreach (var type in toSubscribe.Intersect(_messageTypesHandledByThisEndpoint))
             {
-                await messageSession.Subscribe(type)
-                                    .ConfigureAwait(false);
+                await _messageSession.Subscribe(type)
+                                     .ConfigureAwait(false);
             }
         }
 
