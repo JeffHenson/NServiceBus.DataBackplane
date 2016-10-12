@@ -4,26 +4,26 @@ using System.Linq;
 using System.Threading.Tasks;
 using Consul;
 
-namespace NServiceBus.Backplane.Consul
+namespace NServiceBus.Backplane.Consul.Internal
 {
     internal class ConsulDataBackplane : IDataBackplane
     {
         private const string ServiceName = "NServiceBus.Dataplane";
 
-        private readonly string owner;
-        private readonly string connectionString;
+        private readonly string _owner;
+        private readonly string _connectionString;
 
         public ConsulDataBackplane(string owner, string connectionString)
         {
-            this.owner = owner;
-            this.connectionString = connectionString;
+            _owner = owner;
+            _connectionString = connectionString;
         }
 
         public async Task Publish(string type, string data)
         {
             var client = GetConsulClient();
 
-            var id = $"{owner}:{type}";
+            var id = $"{_owner}:{type}";
             try
             {
                 await CheckIn(client, id).ConfigureAwait(false);
@@ -60,16 +60,16 @@ namespace NServiceBus.Backplane.Consul
         public async Task Revoke(string type)
         {
             var client = GetConsulClient();
-            await client.Agent.ServiceDeregister($"{owner}:{type}").ConfigureAwait(false);
+            await client.Agent.ServiceDeregister($"{_owner}:{type}").ConfigureAwait(false);
         }
 
         private ConsulClient GetConsulClient()
         {
-            if (string.IsNullOrEmpty(connectionString))
+            if (string.IsNullOrEmpty(_connectionString))
             {
                 return new ConsulClient();
             }
-            var uri = new Uri(connectionString);
+            var uri = new Uri(_connectionString);
             return new ConsulClient(c => c.Address = uri);
         }
 
@@ -84,7 +84,7 @@ namespace NServiceBus.Backplane.Consul
                           let entryOwner = serviceId[0]
                           let type = serviceId[1]
                           let data = service.Service.Tags[0]
-                          where entryOwner != owner
+                          where entryOwner != _owner
                           select new Entry(entryOwner, type, data);
 
             return entries.ToList();

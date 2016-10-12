@@ -1,5 +1,7 @@
 ﻿using NServiceBus.Backplane;
-using NServiceBus.Backplane.Consul;
+using NServiceBus.Backplane.Consul.Internal;
+
+// ReSharper disable once CheckNamespace
 
 namespace NServiceBus
 {

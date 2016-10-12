@@ -50,7 +50,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ConsulBackplane.cs" />
-    <Compile Include="ConsulServerDataBackplane.cs" />
+    <Compile Include="Internal\ConsulServerDataBackplane.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
