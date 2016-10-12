@@ -20,9 +20,9 @@ namespace NServiceBus.Routing.Automatic
         private Timer timer;
 
         public HandledMessageInfoPublisher(
-            IDataBackplaneClient dataBackplane, 
+            IDataBackplaneClient dataBackplane,
             IReadOnlyCollection<Type> hanledMessageTypes,
-            ReadOnlySettings settings, 
+            ReadOnlySettings settings,
             TimeSpan heartbeatPeriod)
         {
             this.dataBackplane = dataBackplane;
@@ -31,21 +31,23 @@ namespace NServiceBus.Routing.Automatic
             this.heartbeatPeriod = heartbeatPeriod;
         }
 
-        protected override Task OnStart(IBusContext context)
+        protected override Task OnStart(IMessageSession session)
         {
+            var mainLogicalAddress = settings.LogicalAddress();
+            var instanceProperties = mainLogicalAddress.EndpointInstance.Properties.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+            instanceProperties["queue"] = mainLogicalAddress.EndpointInstance.Endpoint;
+            var publishedMessageTypes = settings.Get<Type[]>("NServiceBus.AutomaticRouting.PublishedTypes");
             publication = new HandledMessageDeclaration
-            {
-                EndpointName = settings.EndpointName().ToString(),
-                UserDiscriminator = settings.EndpointInstanceName().UserDiscriminator,
-                TransportDiscriminator = settings.EndpointInstanceName().TransportDiscriminator,
-                HandledMessageTypes = hanledMessageTypes.Select(m => m.AssemblyQualifiedName).ToArray(),
-                Active = true,
-            };
+                          {
+                              EndpointName = settings.EndpointName(),
+                              Discriminator = mainLogicalAddress.EndpointInstance.Discriminator,
+                              InstanceProperties = instanceProperties,
+                              HandledMessageTypes = hanledMessageTypes.Select(m => m.AssemblyQualifiedName).ToArray(),
+                              PublishedMessageTypes = publishedMessageTypes.Select(m => m.AssemblyQualifiedName).ToArray(),
+                              Active = true
+                          };
 
-            timer = new Timer(state =>
-            {
-                Publish().ConfigureAwait(false).GetAwaiter().GetResult();
-            }, null, heartbeatPeriod, heartbeatPeriod);
+            timer = new Timer(state => { Publish().ConfigureAwait(false).GetAwaiter().GetResult(); }, null, heartbeatPeriod, heartbeatPeriod);
 
             return Publish();
         }
@@ -57,7 +59,7 @@ namespace NServiceBus.Routing.Automatic
             return dataBackplane.Publish("NServiceBus.HandledMessages", dataJson);
         }
 
-        protected override Task OnStop(IBusContext context)
+        protected override Task OnStop(IMessageSession session)
         {
             using (var waitHandle = new ManualResetEvent(false))
             {

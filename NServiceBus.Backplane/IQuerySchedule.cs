@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace NServiceBus.Backplane
 {
-    interface IQuerySchedule
+    internal interface IQuerySchedule
     {
         IDisposable Schedule(Func<Task> recurringAction);
     }

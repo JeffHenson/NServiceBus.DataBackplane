@@ -1,54 +1,75 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using NServiceBus.Backplane;
 using NServiceBus.Configuration.AdvanceExtensibility;
 using NServiceBus.Features;
 using NServiceBus.Routing.Automatic;
+using NServiceBus.Settings;
 using NServiceBus.Unicast;
 
 namespace NServiceBus
 {
     public static class AutomaticRoutingConfigExtensions
     {
-        public static void EnableAutomaticRouting(this RoutingSettings settings)
+        public static EnableAutomaticSettings EnableAutomaticRouting(this EndpointConfiguration endpointConfiguration)
         {
-            settings.GetSettings().EnableFeatureByDefault(typeof (BackplaneBasedRouting));
-            settings.GetSettings().Set(typeof(AutoSubscribe).FullName, FeatureState.Disabled);
+            var settings = endpointConfiguration.GetSettings();
+            settings.EnableFeatureByDefault(typeof(BackplaneBasedRouting));
+            settings.Set(typeof(AutoSubscribe).FullName, FeatureState.Disabled);
+            return new EnableAutomaticSettings(settings);
         }
     }
 
-    class BackplaneBasedRouting : Feature
+    public class EnableAutomaticSettings : ExposeSettings
+    {
+        public EnableAutomaticSettings(SettingsHolder settings) : base(settings) {}
+
+        public void AdvertisePublishing(params Type[] publishedTypes)
+        {
+            this.GetSettings().Set("NServiceBus.AutomaticRouting.PublishedTypes", publishedTypes);
+        }
+    }
+
+    internal class BackplaneBasedRouting : Feature
     {
         public BackplaneBasedRouting()
         {
-            DependsOn<DataBackplane>();  
+            DependsOn<DataBackplane>();
+            Defaults(s => s.SetDefault("NServiceBus.AutomaticRouting.PublishedTypes", new Type[0]));
         }
 
         protected override void Setup(FeatureConfigurationContext context)
         {
             var conventions = context.Settings.Get<Conventions>();
 
-            context.RegisterStartupTask(b =>
-            {
-                var handlerRegistry = b.Build<MessageHandlerRegistry>();
+            context.RegisterStartupTask(builder =>
+                                        {
+                                            var handlerRegistry = builder.Build<MessageHandlerRegistry>();
+                                            var messageTypesHandled = GetMessageTypesHandledByThisEndpoint(handlerRegistry, conventions);
+                                            return new HandledMessageInfoPublisher(dataBackplane: builder.Build<IDataBackplaneClient>(),
+                                                                                   hanledMessageTypes: messageTypesHandled,
+                                                                                   settings: context.Settings,
+                                                                                   heartbeatPeriod: TimeSpan.FromSeconds(5));
+                                        });
 
-                var messageTypesHandled = GetMessageTypesHandledByThisEndpoint(handlerRegistry, conventions);
-
-                return new HandledMessageInfoPublisher(b.Build<IDataBackplaneClient>(), messageTypesHandled, context.Settings, TimeSpan.FromSeconds(5));
-            });
-
-            context.RegisterStartupTask(b => new HandledMessageInfoSubscriber(b.Build<IDataBackplaneClient>(), context.Settings, TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(20)));
+            context.RegisterStartupTask(builder =>
+                                        {
+                                            var handlerRegistry = builder.Build<MessageHandlerRegistry>();
+                                            var messageTypesHandled = GetMessageTypesHandledByThisEndpoint(handlerRegistry, conventions);
+                                            return new HandledMessageInfoSubscriber(dataBackplane: builder.Build<IDataBackplaneClient>(),
+                                                                                    settings: context.Settings,
+                                                                                    hanledMessageTypes: messageTypesHandled,
+                                                                                    sweepPeriod: TimeSpan.FromSeconds(5),
+                                                                                    heartbeatTimeout: TimeSpan.FromSeconds(15));
+                                        });
         }
 
-        static List<Type> GetMessageTypesHandledByThisEndpoint(MessageHandlerRegistry handlerRegistry, Conventions conventions)
+        private static List<Type> GetMessageTypesHandledByThisEndpoint(MessageHandlerRegistry handlerRegistry, Conventions conventions)
         {
-            var messageTypesHandled = handlerRegistry.GetMessageTypes()//get all potential messages
-                .Where(t => !conventions.IsInSystemConventionList(t)) //never auto-route system messages
-                .ToList();
-
-            return messageTypesHandled;
+            return handlerRegistry.GetMessageTypes() //get all potential messages
+                                  .Where(t => !conventions.IsInSystemConventionList(t)) //never auto-route system messages
+                                  .ToList();
         }
     }
 }

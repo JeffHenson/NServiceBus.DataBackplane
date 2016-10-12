@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
@@ -8,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace NServiceBus.Backplane.FileSystem
 {
-    class FileSystemDataBackplane : IDataBackplane
+    internal class FileSystemDataBackplane : IDataBackplane
     {
         private readonly string ownerId;
         private readonly string folder;
@@ -29,11 +28,11 @@ namespace NServiceBus.Backplane.FileSystem
 
         private string CreateFilePath(string type)
         {
-            byte[] bytes = Encoding.UTF8.GetBytes(ownerId + type);
+            var bytes = Encoding.UTF8.GetBytes(ownerId + type);
             var hashstring = new SHA256Managed();
-            byte[] hash = hashstring.ComputeHash(bytes);
-            string hashString = string.Empty;
-            foreach (byte x in hash)
+            var hash = hashstring.ComputeHash(bytes);
+            var hashString = string.Empty;
+            foreach (var x in hash)
             {
                 hashString += $"{x:x2}";
             }

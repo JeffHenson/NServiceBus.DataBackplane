@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using NServiceBus.Backplane;
 using NUnit.Framework;
@@ -24,11 +23,11 @@ namespace SqlDataBackplane.Tests
             await fakeSchedule.TriggerQuery();
             var readValues = new List<string>();
             var subscription = await client.GetAllAndSubscribeToChanges("T1", entry =>
-            {
-                readValues.Add(entry.Data);
-                return Task.FromResult(0);
-            }, entry => Task.FromResult(0));
-            CollectionAssert.AreEqual(new [] {"B", "C"}, readValues);
+                                                                              {
+                                                                                  readValues.Add(entry.Data);
+                                                                                  return Task.FromResult(0);
+                                                                              }, entry => Task.FromResult(0));
+            CollectionAssert.AreEqual(new[] {"B", "C"}, readValues);
             subscription.Unsubscribe();
         }
 
@@ -44,10 +43,10 @@ namespace SqlDataBackplane.Tests
             await client.Start();
             var readValues = new List<string>();
             var subscription = await client.GetAllAndSubscribeToChanges("T1", entry =>
-            {
-                readValues.Add(entry.Data);
-                return Task.FromResult(0);
-            }, entry => Task.FromResult(0));
+                                                                              {
+                                                                                  readValues.Add(entry.Data);
+                                                                                  return Task.FromResult(0);
+                                                                              }, entry => Task.FromResult(0));
 
             await otherBackplane.Publish("T1", "B");
             await fakeSchedule.TriggerQuery();
@@ -71,14 +70,14 @@ namespace SqlDataBackplane.Tests
             await client.Start();
             var readValues = new List<string>();
             var subscription = await client.GetAllAndSubscribeToChanges("T1", entry =>
-            {
-                readValues.Add(entry.Data);
-                return Task.FromResult(0);
-            }, entry =>
-            {
-                readValues.Remove(entry.Data);
-                return Task.FromResult(0);
-            });
+                                                                              {
+                                                                                  readValues.Add(entry.Data);
+                                                                                  return Task.FromResult(0);
+                                                                              }, entry =>
+                                                                                 {
+                                                                                     readValues.Remove(entry.Data);
+                                                                                     return Task.FromResult(0);
+                                                                                 });
 
             await otherBackplane.Publish("T1", "B");
             await fakeSchedule.TriggerQuery();
@@ -92,7 +91,7 @@ namespace SqlDataBackplane.Tests
 
         private class FakeSchedule : IQuerySchedule
         {
-            private Func<Task> action; 
+            private Func<Task> action;
 
             public IDisposable Schedule(Func<Task> recurringAction)
             {
@@ -107,9 +106,7 @@ namespace SqlDataBackplane.Tests
 
             private class Disposable : IDisposable
             {
-                public void Dispose()
-                {
-                }
+                public void Dispose() {}
             }
         }
 
@@ -124,7 +121,6 @@ namespace SqlDataBackplane.Tests
                 this.entries = entries;
             }
 
-
             public Task Publish(string type, string data)
             {
                 entries.Add(new Entry(owner, type, data));
@@ -133,12 +129,12 @@ namespace SqlDataBackplane.Tests
 
             public Task<IReadOnlyCollection<Entry>> Query()
             {
-                return Task.FromResult((IReadOnlyCollection<Entry>)entries.ToArray());
+                return Task.FromResult((IReadOnlyCollection<Entry>) entries.ToArray());
             }
 
             public Task Revoke(string type)
             {
-                entries.RemoveAll(e => e.Owner == owner && e.Type == type);
+                entries.RemoveAll(e => (e.Owner == owner) && (e.Type == type));
                 return Task.FromResult(0);
             }
         }

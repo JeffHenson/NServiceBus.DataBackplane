@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace NServiceBus.Backplane
 {
-    class DefaultQuerySchedule : IQuerySchedule
+    internal class DefaultQuerySchedule : IQuerySchedule
     {
         public IDisposable Schedule(Func<Task> recurringAction)
         {
@@ -12,16 +12,13 @@ namespace NServiceBus.Backplane
             return timer;
         }
 
-        class TimerWrapper : IDisposable
+        private class TimerWrapper : IDisposable
         {
             private readonly Timer timer;
 
             public TimerWrapper(Func<Task> recurringAction, TimeSpan period)
             {
-                timer = new Timer(state =>
-                {
-                    recurringAction().ConfigureAwait(false).GetAwaiter().GetResult();
-                }, null, TimeSpan.Zero, period);
+                timer = new Timer(state => { recurringAction().ConfigureAwait(false).GetAwaiter().GetResult(); }, null, TimeSpan.Zero, period);
             }
 
             public void Dispose()

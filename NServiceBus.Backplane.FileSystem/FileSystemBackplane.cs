@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using System.Text;
 
 namespace NServiceBus.Backplane.FileSystem
 {
@@ -9,9 +8,9 @@ namespace NServiceBus.Backplane.FileSystem
     {
         public override IDataBackplane CreateBackplane(string nodeId, string connectionString)
         {
-            var folder = connectionString == null 
-                ? CreateUniqueFOlderBasedOnSolutionName() 
-                : UseFolderFromConnectionString(connectionString);
+            var folder = connectionString == null
+                             ? CreateUniqueFOlderBasedOnSolutionName()
+                             : UseFolderFromConnectionString(connectionString);
 
             return new FileSystemDataBackplane(nodeId, folder);
         }
@@ -32,11 +31,10 @@ namespace NServiceBus.Backplane.FileSystem
             var solutionFile = FindSolutionFile(new DirectoryInfo(currentPath));
             if (solutionFile == null)
             {
-                throw new Exception(
-                    "Could not find solution (.sln) file on path between the bin folder and drive root. ");
+                throw new Exception("Could not find solution (.sln) file on path between the bin folder and drive root. ");
             }
             var tempDir = Path.Combine(Path.GetTempPath(), "NServiceBus.Backplane",
-                Path.GetFileNameWithoutExtension(solutionFile));
+                                       Path.GetFileNameWithoutExtension(solutionFile));
             Directory.CreateDirectory(tempDir);
             folder = tempDir;
             return folder;

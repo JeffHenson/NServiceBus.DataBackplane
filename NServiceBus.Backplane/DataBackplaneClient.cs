@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace NServiceBus.Backplane
 {
-    class DataBackplaneClient : IDataBackplaneClient
+    internal class DataBackplaneClient : IDataBackplaneClient
     {
-        private Dictionary<CacheKey, Entry> cache = new Dictionary<CacheKey, Entry>();
+        private readonly Dictionary<CacheKey, Entry> cache = new Dictionary<CacheKey, Entry>();
         private readonly IDataBackplane dataBackplane;
         private readonly IQuerySchedule schedule;
         private IDisposable timer;
@@ -23,30 +23,30 @@ namespace NServiceBus.Backplane
         public Task Start()
         {
             timer = schedule.Schedule(async () =>
-            {
-                var addedOrUpdated = new List<Entry>();
-                var results = (await dataBackplane.Query());
-                var removed = cache.Values.Where(x => !results.Any(r => r.Type == x.Type && r.Owner == x.Owner)).ToArray();
-                foreach (var entry in results)
-                {
-                    Entry oldEntry;
-                    var key = new CacheKey(entry.Owner, entry.Type);
-                    if (!cache.TryGetValue(key, out oldEntry) || oldEntry.Data != entry.Data)
-                    {
-                        cache[key] = entry;
-                        addedOrUpdated.Add(entry);
-                    }
-                }
-                foreach (var change in addedOrUpdated)
-                {
-                    await NotifyChanged(change).ConfigureAwait(false);
-                }
-                foreach (var entry in removed)
-                {
-                    cache.Remove(new CacheKey(entry.Owner, entry.Type));
-                    await NotifyRemoved(entry).ConfigureAwait(false);
-                }
-            });
+                                      {
+                                          var addedOrUpdated = new List<Entry>();
+                                          var results = await dataBackplane.Query();
+                                          var removed = cache.Values.Where(x => !results.Any(r => (r.Type == x.Type) && (r.Owner == x.Owner))).ToArray();
+                                          foreach (var entry in results)
+                                          {
+                                              Entry oldEntry;
+                                              var key = new CacheKey(entry.Owner, entry.Type);
+                                              if (!cache.TryGetValue(key, out oldEntry) || (oldEntry.Data != entry.Data))
+                                              {
+                                                  cache[key] = entry;
+                                                  addedOrUpdated.Add(entry);
+                                              }
+                                          }
+                                          foreach (var change in addedOrUpdated)
+                                          {
+                                              await NotifyChanged(change).ConfigureAwait(false);
+                                          }
+                                          foreach (var entry in removed)
+                                          {
+                                              cache.Remove(new CacheKey(entry.Owner, entry.Type));
+                                              await NotifyRemoved(entry).ConfigureAwait(false);
+                                          }
+                                      });
             return Task.FromResult(0);
         }
 
@@ -86,10 +86,10 @@ namespace NServiceBus.Backplane
         {
             var subscriberId = Guid.NewGuid();
             var subscriber = new Subscriber(type, onChanged, onRemoved, () =>
-            {
-                Subscriber _;
-                subscribers.TryRemove(subscriberId, out _);
-            });
+                                                                        {
+                                                                            Subscriber _;
+                                                                            subscribers.TryRemove(subscriberId, out _);
+                                                                        });
             subscribers.TryAdd(subscriberId, subscriber);
             var cacheCopy = cache;
             foreach (var entry in cacheCopy)
@@ -143,7 +143,7 @@ namespace NServiceBus.Backplane
                 unsubscribed = true;
             }
         }
-        
+
         private class CacheKey
         {
             private readonly string owner;
@@ -164,8 +164,8 @@ namespace NServiceBus.Backplane
             {
                 if (ReferenceEquals(null, obj)) return false;
                 if (ReferenceEquals(this, obj)) return true;
-                if (obj.GetType() != this.GetType()) return false;
-                return Equals((CacheKey)obj);
+                if (obj.GetType() != GetType()) return false;
+                return Equals((CacheKey) obj);
             }
 
             public override int GetHashCode()

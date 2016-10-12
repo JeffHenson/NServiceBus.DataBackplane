@@ -10,7 +10,7 @@ namespace NServiceBus.Routing.Automatic
 
         public void Deactivate()
         {
-            State = InstanceState.Inactive;            
+            State = InstanceState.Inactive;
         }
 
         public bool Sweep(DateTime currentTimeUtc, TimeSpan timeoutPeriod)

@@ -5,10 +5,10 @@ using System.Threading.Tasks;
 
 namespace NServiceBus.Backplane.SqlServer
 {
-    class SqlServerDataBackplane : IDataBackplane
+    internal class SqlServerDataBackplane : IDataBackplane
     {
         private readonly string owner;
-        readonly string connectionString;
+        private readonly string connectionString;
 
         public SqlServerDataBackplane(string owner, string connectionString)
         {
@@ -79,7 +79,7 @@ SELECT [Owner], [Type], [Value] FROM [Data] WHERE [Owner] <> @Owner
                         {
                             while (reader.Read())
                             {
-                                results.Add(new Entry((string)reader[0], (string)reader[1], (string)reader[2]));
+                                results.Add(new Entry((string) reader[0], (string) reader[1], (string) reader[2]));
                             }
                         }
                         return results;
