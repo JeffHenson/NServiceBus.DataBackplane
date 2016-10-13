@@ -24,21 +24,21 @@ namespace NServiceBus.Backplane
 
         private class DataBackplaneClientLifecycle : FeatureStartupTask
         {
-            private readonly DataBackplaneClient client;
+            private readonly DataBackplaneClient _client;
 
             public DataBackplaneClientLifecycle(DataBackplaneClient client)
             {
-                this.client = client;
+                _client = client;
             }
 
             protected override Task OnStart(IMessageSession session)
             {
-                return client.Start();
+                return _client.Start();
             }
 
             protected override Task OnStop(IMessageSession session)
             {
-                return client.Stop();
+                return _client.Stop();
             }
         }
     }

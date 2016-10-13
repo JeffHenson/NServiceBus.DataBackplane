@@ -1,5 +1,4 @@
 ﻿using NServiceBus.Configuration.AdvanceExtensibility;
-using NServiceBus.Features;
 
 namespace NServiceBus.Backplane
 {
@@ -23,7 +22,7 @@ namespace NServiceBus.Backplane
                 settings.Set("NServiceBus.DataBackplane.ConnectionString", connectionString);
             }
             settings.Set<BackplaneDefinition>(new T());
-            settings.EnableFeatureByDefault(typeof(DataBackplane));
+            endpointConfiguration.EnableFeature<DataBackplane>();
         }
     }
 }
